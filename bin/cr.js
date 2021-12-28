@@ -29,7 +29,7 @@ const CRYPTIC_DEFAULT_SHEETS = {
     'medicine': "https://github.com/cryptic-resolver/cryptic_medicine.git"
 }
 
-const CRYPTIC_VERSION = "2.2.0";
+const CRYPTIC_VERSION = "2.3.0";
 
 /*
     color function
@@ -129,7 +129,7 @@ function pp_info(info) {
     console.log(`\n  ${disp}: ${info['desc']}`);
 
     if (full = info['full']) {
-        console.log("\n  ", full, "\n");
+        console.log("\n  ", full);
     }
 
     let see_also = info['see'];
@@ -184,7 +184,7 @@ function lookup(sheet, file, word) {
     if (dict == undefined) {
         return false;
     }
-    // console.log(dict);
+
     let info = dict[word] // Directly hash it
 
     if (info == undefined) {
@@ -261,7 +261,6 @@ function solve_word(word) {
 
     let index = word.charAt(0);
 
-    index = Number(index); // no need to convert
     if (0 <= index && index <= 9) {
         index = '0123456789'
     }
