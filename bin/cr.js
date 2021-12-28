@@ -29,7 +29,7 @@ const CRYPTIC_DEFAULT_SHEETS = {
     'medicine': "https://github.com/cryptic-resolver/cryptic_medicine.git"
 }
 
-const CRYPTIC_VERSION = "2.3.0";
+const CRYPTIC_VERSION = "2.4.0";
 
 /*
     color function
@@ -304,14 +304,12 @@ Or you could contribute to our sheets: Thanks!
 
 
 function help() {
-    console.log(`
-cr: Cryptic Resolver version ${CRYPTIC_VERSION} in NodeJS
+    console.log(`cr: Cryptic Resolver version ${CRYPTIC_VERSION} in NodeJS
 
 usage:
   cr -h                     => print this help
   cr -u (xx.com//repo.git)  => update default sheet or add sheet from a git repo
-  cr emacs                  => Edit macros: a feature-rich editor
-`
+  cr emacs                  => Edit macros: a feature-rich editor`
     )
 }
 
