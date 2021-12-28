@@ -32,11 +32,6 @@ const CRYPTIC_DEFAULT_SHEETS = {
 }
 
 
-console.log(userHomeDir);
-console.log(CRYPTIC_RESOLVER_HOME);
-console.log(CRYPTIC_DEFAULT_SHEETS);
-
-
 /*
     color function
 */
@@ -62,15 +57,15 @@ function isDirEmpty(dirname) {
 }
 
 function is_there_any_sheet() {
-    fs.access(CRYPTIC_RESOLVER_HOME, fs.constants.F_OK, (err) => {
+    if(fs.accessSync(CRYPTIC_RESOLVER_HOME, fs.constants.F_OK)){
         fs.mkdir(CRYPTIC_RESOLVER_HOME);
-    });
+    }
 
     return !isDirEmpty(CRYPTIC_RESOLVER_HOME);
 }
 
 function add_default_sheet_if_none_exist() {
-    if (!is_there_any_sheet()) {
+    if (is_there_any_sheet()) {
         console.log("cr: Adding default sheets...");
 
         Object.entries(CRYPTIC_DEFAULT_SHEETS).forEach((arr) => {
@@ -113,6 +108,17 @@ function update_sheets(sheet_repo) {
 }
 
 
+function load_dictionary(path, file) {
+    file = CRYPTIC_RESOLVER_HOME + `/${path}/${file}.toml`
+
+    if (fs.accessSync(file, fs.constants.F_OK)){
+        return Tomlrb.load_file(file);
+    } else {
+        return false;
+    }
+}
+
+
 function pp_info(info) {
     let disp = info['disp'] || red("No name!");
     console.log("\n  #{disp}: #{info['desc']}");
@@ -141,11 +147,13 @@ function pp_sheet(sheet) {
 
 
 function directly_lookup(sheet, file, word) {
-    let dict = load_dictionary(sheet, file.downcase);
+    let dict = load_dictionary(sheet, file.toLowerCase());
 
-    let words = word.split('.') // [XDG Download];
-    let word = words.shift // XDG [Download]
-    let explain = words.first
+    let words = word.split('.');
+
+    word = words.shift();
+
+    let explain = words[0];
 
     if (explain == undefined) {
         let = info = dict[word];
@@ -157,10 +165,10 @@ function directly_lookup(sheet, file, word) {
     if (info == undefined) {
         console.log(
             red(`WARN: Synonym jumps to a wrong place at \`${word}\`
-      Please consider fixing this in ${file.downcase}.toml\` of the sheet \`${sheet}\``));
+      Please consider fixing this in ${file.toLowerCase()}.toml\` of the sheet \`${sheet}\``));
     }
 
-    pp_info(info)
+    pp_info(info);
     return true // always true
 }
 
@@ -178,7 +186,6 @@ function lookup(sheet, file, word) {
         return false;
     }
 
-
     if (info.size == 0) {
         console.log(red(`WARN: Lack of everything of the given word 
         Please consider fixing this in the sheet\`${sheet}\``));
@@ -195,24 +202,22 @@ function lookup(sheet, file, word) {
     // point out to user, this is a jump
     console.log(blue(bold(word)) + ' redirects to ' + blue(bold(same)));
 
-    if (same.chr.downcase == file) {
-
-        same = same.downcase();
+    if (same.charAt(0).toLowerCase() == file) {
+        same = same.toLowerCase();
         info = dict[same];
         if (info == undefined) {
-            console.log(red(`WARN: Synonym jumps to the wrong place \`${same}\`,
-        Please consider fixing this in \`${file.downcase}.toml\` of the sheet\`${sheet}\``));
+            console.log(
+                red(`WARN: Synonym jumps to the wrong place \`${same}\`,
+        Please consider fixing this in \`${file.toLowerCase()}.toml\` of the sheet\`${sheet}\``));
             process.exit();
             return false;
         } else {
             pp_info(info);
             return true;
         }
-    }
-    else {
+    } else {
         return directly_lookup(sheet, same.chr, same);
     }
-
 
     // Check if it's only one meaning
     if (info.has_key('desc')) {
@@ -241,33 +246,33 @@ function lookup(sheet, file, word) {
 }
 
 
-function solve_word(word){
-  
-  add_default_sheet_if_none_exist();
+function solve_word(word) {
 
-  let word = word.downcase ;
-  
-  let index = word.chr
-  
-  if(index == [0-9]){
-    index = '0123456789'
-  }
-  
-  let first_sheet = "cryptic_" + CRYPTIC_DEFAULT_SHEETS.keys[0].to_s
+    add_default_sheet_if_none_exist();
 
-  // cache lookup results
-  let results = []
-  results << lookup(first_sheet,index,word)
-  
-  // Then else
-  let rest = Dir.children(CRYPTIC_RESOLVER_HOME)
-  rest.delete(first_sheet);
-  rest.forEach( sheet => {
-    results << lookup(sheet,index,word)
-  }); 
-    
-  if (!results.include(true)){
-    console.log(`
+    word = word.toLowerCase();
+
+    let index = word.charAt(0);
+
+    if (index == [0 - 9]) {
+        index = '0123456789'
+    }
+
+    let first_sheet = "cryptic_" + CRYPTIC_DEFAULT_SHEETS[0];
+
+    // cache lookup results
+    let results = [];
+    results.push(lookup(first_sheet, index, word));
+
+    // Then else
+    let rest = Dir.children(CRYPTIC_RESOLVER_HOME);
+    rest.delete(first_sheet);
+    rest.forEach(sheet => {
+        results << lookup(sheet, index, word)
+    });
+
+    if (!results.include(true)) {
+        console.log(`
     cr: Not found anything.
     
     You may use \`cr -u\` to update the sheets.
@@ -284,8 +289,8 @@ function solve_word(word){
       else
         return
       end`);
-      
-  }
+
+    }
 
 }
 
@@ -307,7 +312,8 @@ usage:
 
 
 function main() {
-    let arg = ARGV.shift
+    process.argv.splice(0,2); // remove `node` command and file name
+    let arg = process.argv.shift();
     switch (arg) {
         case undefined:
             help();
@@ -317,7 +323,7 @@ function main() {
             help();
             break;
         case '-u':
-            update_sheets(ARGV.shift);
+            update_sheets(process.argv.shift());
             break;
         default:
             solve_word(arg);
