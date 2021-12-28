@@ -78,31 +78,31 @@ function add_default_sheet_if_none_exist() {
 
 
 function update_sheets(sheet_repo) {
-    if (is_there_any_sheet() == false) {
-        return;
-    }
+
+    add_default_sheet_if_none_exist();
 
     if (sheet_repo == undefined) {
-        fs.readdirSync(CRYPTIC_RESOLVER_HOME, (err, files) => {
-            if (err) {
-                return console.log(err);
-            }
-            else {
-                files.forEach(sheet => {
-                    if (sheet.isDirectory()) {
-                        console.log(`cr: Wait to update ${sheet}...`);
-                        execSync(`git -C ${CRYPTIC_RESOLVER_HOME}/${sheet} pull`);
-                    }
-                })
+        console.log("cr: updating all sheets...");
+        let readDirOpt = {};
+        readDirOpt.withFileTypes = true;
+        let files = fs.readdirSync(CRYPTIC_RESOLVER_HOME, readDirOpt); // Dirent
+
+        files.forEach(sheet => {
+            if (sheet.isDirectory()) {
+                console.log(`cr: Wait to update ${sheet.name}...`);
+                execSync(`git -C ${CRYPTIC_RESOLVER_HOME}/${sheet.name} pull`);
             }
         });
+        console.log("cr: update done");
 
+    } else {
+        try {
+            execSync(`git -C ${CRYPTIC_RESOLVER_HOME} clone ${sheet_repo}`); // no callback, so use catch
+            console.log("cr: add new sheet done");
+        } catch (err) {
+            console.log("cr: already added before");
+        }
     }
-    else {
-        execSync(`git -C ${CRYPTIC_RESOLVER_HOME} clone ${sheet_repo}`);
-    }
-
-    console.log("cr: Done");
 }
 
 
@@ -132,7 +132,6 @@ function pp_info(info) {
         see_also.forEach(x => {
             console.log(underline(x), ' ')
         });
-        console.log();
     }
     console.log();
 }
@@ -194,7 +193,7 @@ function lookup(sheet, file, word) {
 
     // Check whether it's a synonym for anther word
     // If yes, we should lookup into this sheet again, but maybe with a different file
-    
+
     let same = info['same'];
     if (same) {
         pp_sheet(sheet);
@@ -256,7 +255,8 @@ function solve_word(word) {
 
     let index = word.charAt(0);
 
-    if (index == [0 - 9]) {
+    index = Number(index); // no need to convert
+    if (0 <= index && index <= 9) {
         index = '0123456789'
     }
 
@@ -279,7 +279,7 @@ function solve_word(word) {
 
     if (!results.includes(true)) {
         console.log(
-`cr: Not found anything.
+            `cr: Not found anything.
     
 You may use \`cr -u\` to update the sheets.
 Or you could contribute to our sheets: Thanks!
