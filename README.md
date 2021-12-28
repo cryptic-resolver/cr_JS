@@ -33,7 +33,7 @@ Not only can it be used in the computer filed, but also you can use this to mana
 ## Install
 
 ```bash
-npm install cryptic-resolver
+npm install cryptic-resolver -g
 ```
 
 Tested well on `Ubuntu` and `Windows 11`.
