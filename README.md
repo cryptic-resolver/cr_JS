@@ -167,8 +167,9 @@ maybe you need `sudo` access
 
 - `npm login`
 - `npm publish`
-- `npm install cryptic-resolcer`
-- `npm uninstall cryptic-resolver`
+- `npm install cryptic-resolcer -g`
+- `npm update cryptic-resolcer -g`
+- `npm uninstall cryptic-resolver -g`
 
 
 <br>
