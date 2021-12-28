@@ -34,14 +34,14 @@ const CRYPTIC_DEFAULT_SHEETS = {
     color function
 */
 
-let bold = (str) => `\e[1m${str}\e[0m`;
-let underline = (str) => `\e[4m${str}\e[0m`;
-let red = (str) => `\e[31m${str}\e[0m`;
-let green = (str) => `\e[32m${str}\e[0m`;
-let yellow = (str) => `\e[33m${str}\e[0m`;
-let blue = (str) => `\e[34m${str}\e[0m`;
-let purple = (str) => `\e[35m${str}\e[0m`;
-let cyan = (str) => `\e[36m${str}\e[0m`;
+let bold = (str) => `\x1b[1m${str}\x1b[0m`;
+let underline = (str) => `\x1b[4m${str}\x1b[0m`;
+let red = (str) => `\x1b[31m${str}\x1b[0m`;
+let green = (str) => `\x1b[32m${str}\x1b[0m`;
+let yellow = (str) => `\x1b[33m${str}\x1b[0m`;
+let blue = (str) => `\x1b[34m${str}\x1b[0m`;
+let purple = (str) => `\x1b[35m${str}\x1b[0m`;
+let cyan = (str) => `\x1b[36m${str}\x1b[0m`;
 
 
 /*
