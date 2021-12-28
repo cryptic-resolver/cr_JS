@@ -11,7 +11,7 @@
 // 
 //  ---------------------------------------------------
 
-// require('toml')
+var toml = require('toml');
 
 const os = require("os");
 const path = require("path");
@@ -20,9 +20,7 @@ const process = require("process");
 
 const { execSync } = require("child_process");
 
-const userHomeDir = os.homedir();
-
-const CRYPTIC_RESOLVER_HOME = path.resolve(userHomeDir, "./.cryptic-resolver");
+const CRYPTIC_RESOLVER_HOME = path.resolve(os.homedir(), "./.cryptic-resolver");
 const CRYPTIC_DEFAULT_SHEETS = {
     'computer': "https://github.com/cryptic-resolver/cryptic_computer.git",
     'common': "https://github.com/cryptic-resolver/cryptic_common.git",
@@ -36,14 +34,14 @@ const CRYPTIC_DEFAULT_SHEETS = {
     color function
 */
 
-let bold = (str) => "\e[1m#{str}\e[0m";
-let underline = (str) => "\e[4m#{str}\e[0m";
-let red = (str) => "\e[31m#{str}\e[0m";
-let green = (str) => "\e[32m#{str}\e[0m";
-let yellow = (str) => "\e[33m#{str}\e[0m";
-let blue = (str) => "\e[34m#{str}\e[0m";
-let purple = (str) => "\e[35m#{str}\e[0m";
-let cyan = (str) => "\e[36m#{str}\e[0m";
+let bold = (str) => `\e[1m${str}\e[0m`;
+let underline = (str) => `\e[4m${str}\e[0m`;
+let red = (str) => `\e[31m${str}\e[0m`;
+let green = (str) => `\e[32m${str}\e[0m`;
+let yellow = (str) => `\e[33m${str}\e[0m`;
+let blue = (str) => `\e[34m${str}\e[0m`;
+let purple = (str) => `\e[35m${str}\e[0m`;
+let cyan = (str) => `\e[36m${str}\e[0m`;
 
 
 /*
@@ -57,8 +55,8 @@ function isDirEmpty(dirname) {
 }
 
 function is_there_any_sheet() {
-    if(fs.accessSync(CRYPTIC_RESOLVER_HOME, fs.constants.F_OK)){
-        fs.mkdir(CRYPTIC_RESOLVER_HOME);
+    if (!fs.existsSync(CRYPTIC_RESOLVER_HOME, fs.constants.F_OK)) { // fs.exists is deprecated
+        fs.mkdirSync(CRYPTIC_RESOLVER_HOME);
     }
 
     return !isDirEmpty(CRYPTIC_RESOLVER_HOME);
@@ -92,7 +90,7 @@ function update_sheets(sheet_repo) {
             else {
                 files.forEach(sheet => {
                     if (sheet.isDirectory()) {
-                        console.log("cr: Wait to update #{sheet}...");
+                        console.log(`cr: Wait to update ${sheet}...`);
                         execSync(`git -C ${CRYPTIC_RESOLVER_HOME}/${sheet} pull`);
                     }
                 })
@@ -101,7 +99,7 @@ function update_sheets(sheet_repo) {
 
     }
     else {
-        execSync(`git -C #{CRYPTIC_RESOLVER_HOME} clone #{sheet_repo}`);
+        execSync(`git -C ${CRYPTIC_RESOLVER_HOME} clone ${sheet_repo}`);
     }
 
     console.log("cr: Done");
@@ -111,8 +109,9 @@ function update_sheets(sheet_repo) {
 function load_dictionary(path, file) {
     file = CRYPTIC_RESOLVER_HOME + `/${path}/${file}.toml`
 
-    if (fs.accessSync(file, fs.constants.F_OK)){
-        return Tomlrb.load_file(file);
+    if (fs.existsSync(file, fs.constants.F_OK)) {
+        file = fs.readFileSync(file);
+        return toml.parse(file);
     } else {
         return false;
     }
@@ -121,7 +120,7 @@ function load_dictionary(path, file) {
 
 function pp_info(info) {
     let disp = info['disp'] || red("No name!");
-    console.log("\n  #{disp}: #{info['desc']}");
+    console.log(`\n  ${disp}: ${info['desc']}`);
 
     if (full = info['full']) {
         console.log("\n  ", full, "\n");
@@ -180,8 +179,9 @@ function lookup(sheet, file, word) {
     if (dict == undefined) {
         return false;
     }
-
+    // console.log(dict);
     let info = dict[word] // Directly hash it
+
     if (info == undefined) {
         return false;
     }
@@ -197,30 +197,31 @@ function lookup(sheet, file, word) {
     let same = info['same'];
     if (same) {
         pp_sheet(sheet);
-    }
 
-    // point out to user, this is a jump
-    console.log(blue(bold(word)) + ' redirects to ' + blue(bold(same)));
+        // point out to user, this is a jump
+        console.log(blue(bold(word)) + ' redirects to ' + blue(bold(same)));
 
-    if (same.charAt(0).toLowerCase() == file) {
-        same = same.toLowerCase();
-        info = dict[same];
-        if (info == undefined) {
-            console.log(
-                red(`WARN: Synonym jumps to the wrong place \`${same}\`,
+        if (same.charAt(0).toLowerCase() == file) {
+            same = same.toLowerCase();
+            info = dict[same];
+            if (info == undefined) {
+                console.log(
+                    red(`WARN: Synonym jumps to the wrong place \`${same}\`,
         Please consider fixing this in \`${file.toLowerCase()}.toml\` of the sheet\`${sheet}\``));
-            process.exit();
-            return false;
+                process.exit();
+                return false;
+            } else {
+                pp_info(info);
+                return true;
+            }
         } else {
-            pp_info(info);
-            return true;
+            return directly_lookup(sheet, same.chr, same);
         }
-    } else {
-        return directly_lookup(sheet, same.chr, same);
     }
+
 
     // Check if it's only one meaning
-    if (info.has_key('desc')) {
+    if (info['desc']!=undefined) {
         pp_sheet(sheet);
         pp_info(info);
         return true;
@@ -258,31 +259,31 @@ function solve_word(word) {
         index = '0123456789'
     }
 
-    let first_sheet = "cryptic_" + CRYPTIC_DEFAULT_SHEETS[0];
+    let first_sheet = "cryptic_" + Object.keys(CRYPTIC_DEFAULT_SHEETS)[0];
 
     // cache lookup results
     let results = [];
     results.push(lookup(first_sheet, index, word));
 
     // Then else
-    let rest = Dir.children(CRYPTIC_RESOLVER_HOME);
-    rest.delete(first_sheet);
+    let rest = fs.readdirSync(CRYPTIC_RESOLVER_HOME); // return string[]
+    rest.shift();
     rest.forEach(sheet => {
-        results << lookup(sheet, index, word)
+        results.push(lookup(sheet, index, word));
     });
 
-    if (!results.include(true)) {
+    if (!results.includes(true)) {
         console.log(`
     cr: Not found anything.
     
     You may use \`cr -u\` to update the sheets.
     Or you could contribute to our sheets: Thanks!
     
-      1. computer:   #{CRYPTIC_DEFAULT_SHEETS[:computer]}
-      2. common:     #{CRYPTIC_DEFAULT_SHEETS[:common]}
-      3. science:    #{CRYPTIC_DEFAULT_SHEETS[:science]}
-      4. economy:    #{CRYPTIC_DEFAULT_SHEETS[:economy]}
-      5. medicine:   #{CRYPTIC_DEFAULT_SHEETS[:medicine]}
+      1. computer:   ${CRYPTIC_DEFAULT_SHEETS['computer']}
+      2. common:     ${CRYPTIC_DEFAULT_SHEETS['common']}
+      3. science:    ${CRYPTIC_DEFAULT_SHEETS['science']}
+      4. economy:    ${CRYPTIC_DEFAULT_SHEETS.economy}
+      5. medicine:   ${CRYPTIC_DEFAULT_SHEETS.medicine}
     
     NotFound
     
@@ -312,7 +313,7 @@ usage:
 
 
 function main() {
-    process.argv.splice(0,2); // remove `node` command and file name
+    process.argv.splice(0, 2); // remove `node` command and file name
     let arg = process.argv.shift();
     switch (arg) {
         case undefined:
