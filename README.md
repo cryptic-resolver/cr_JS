@@ -4,7 +4,7 @@
 
 
 [![word-count](https://img.shields.io/badge/Keywords%20Inlcuded-386-brightgreen)](#default-sheets)
-[![Gem Version](https://badge.fury.io/rb/cryptic-resolver.svg)](https://rubygems.org/gems/cryptic-resolver) 
+[![Npm Version](https://badge.fury.io/js/cryptic-resolver.svg)](https://npmjs.com/package/cryptic-resolver) 
 
 </div>
 
@@ -33,7 +33,7 @@ Not only can it be used in the computer filed, but also you can use this to mana
 ## Install
 
 ```bash
-gem install cryptic-resolver
+npm install cryptic-resolver
 ```
 
 Tested well on `Ubuntu` and `Windows 11`.
@@ -165,11 +165,11 @@ In one sheet, you should consider adding a subkey to differ each other like the 
 
 maybe you need `sudo` access
 
-- `gem build cryptic-resolver`
-- `gem install cryptic-resolver -l`
-- `gem uninstall cryptic-resolver`
-- `gem update cryptic-resolver (--pre)`
-- `gem push cryptic-resolver-x.x.gem`
+- `npm login`
+- `npm publish`
+- `npm install cryptic-resolcer`
+- `npm uninstall cryptic-resolver`
+
 
 <br>
 

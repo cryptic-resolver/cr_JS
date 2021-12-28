@@ -1,5 +1,5 @@
 {
-  "name": "cr_js",
+  "name": "cryptic-resolver",
   "version": "1.0.0",
   "description": "This command line tool `cr` is used to record and explain cryptic commands, acronyms and so forth in daily life. Not only can it be used in computer filed via our default sheet cryptic_computer, but also you can use this to manage your own knowledge base easily.",
   "main": "cr.js",
@@ -10,5 +10,13 @@
   "license": "MIT",
   "dependencies": {
     "toml": "^3.0.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cryptic-resolver/cr_JS"
+  },
+  "bugs": {
+    "url": "https://github.com/cryptic-resolver/cr_JS/issues"
+  },
+  "homepage": "https://github.com/cryptic-resolver/cr_JS"
 }
