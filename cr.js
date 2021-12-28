@@ -128,7 +128,7 @@ function pp_info(info) {
 
     let see_also = info['see'];
     if (see_also) {
-        console.log("\n", purple("SEE ALSO "));
+        process.stdout.write("\n" + purple("SEE ALSO "));
         see_also.forEach(x => {
             console.log(underline(x), ' ')
         });
@@ -194,6 +194,7 @@ function lookup(sheet, file, word) {
 
     // Check whether it's a synonym for anther word
     // If yes, we should lookup into this sheet again, but maybe with a different file
+    
     let same = info['same'];
     if (same) {
         pp_sheet(sheet);
@@ -219,27 +220,27 @@ function lookup(sheet, file, word) {
         }
     }
 
-
     // Check if it's only one meaning
-    if (info['desc']!=undefined) {
+    if (info['desc'] != undefined) {
         pp_sheet(sheet);
         pp_info(info);
         return true;
     }
 
     // Multiple meanings in one sheet
-    info = info.keys
+    info = Object.keys(info);
 
-    if (info.empty()) {
+    if (info.length != 0) {
         pp_sheet(sheet)
         info.forEach(meaning => {
             pp_info(dict[word][meaning])
             // last meaning doesn't show this separate line
-            if (info.last != meaning) {
-                console.log(blue(bold("OR")), "\n");
+            if (info.at(-1) != meaning) {
+                console.log(blue(bold("OR")));
             }
-            return true;
         })
+
+        return true;
 
     } else {
         return false
@@ -267,29 +268,28 @@ function solve_word(word) {
 
     // Then else
     let rest = fs.readdirSync(CRYPTIC_RESOLVER_HOME); // return string[]
-    rest.shift();
+
+    // remove first sheet
+    let i = rest.indexOf(first_sheet);
+    rest.splice(i, 1);
+
     rest.forEach(sheet => {
         results.push(lookup(sheet, index, word));
     });
 
     if (!results.includes(true)) {
-        console.log(`
-    cr: Not found anything.
+        console.log(
+`cr: Not found anything.
     
-    You may use \`cr -u\` to update the sheets.
-    Or you could contribute to our sheets: Thanks!
+You may use \`cr -u\` to update the sheets.
+Or you could contribute to our sheets: Thanks!
     
-      1. computer:   ${CRYPTIC_DEFAULT_SHEETS['computer']}
-      2. common:     ${CRYPTIC_DEFAULT_SHEETS['common']}
-      3. science:    ${CRYPTIC_DEFAULT_SHEETS['science']}
-      4. economy:    ${CRYPTIC_DEFAULT_SHEETS.economy}
-      5. medicine:   ${CRYPTIC_DEFAULT_SHEETS.medicine}
-    
-    NotFound
-    
-      else
-        return
-      end`);
+    1. computer:   ${CRYPTIC_DEFAULT_SHEETS['computer']}
+    2. common:     ${CRYPTIC_DEFAULT_SHEETS['common']}
+    3. science:    ${CRYPTIC_DEFAULT_SHEETS['science']}
+    4. economy:    ${CRYPTIC_DEFAULT_SHEETS.economy}
+    5. medicine:   ${CRYPTIC_DEFAULT_SHEETS.medicine}
+`);
 
     }
 
