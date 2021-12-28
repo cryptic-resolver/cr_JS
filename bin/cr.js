@@ -11,7 +11,7 @@
 // 
 //  ---------------------------------------------------
 
-var toml = require('toml');
+const toml = require('toml');
 
 const os = require("os");
 const path = require("path");
@@ -29,6 +29,7 @@ const CRYPTIC_DEFAULT_SHEETS = {
     'medicine': "https://github.com/cryptic-resolver/cryptic_medicine.git"
 }
 
+const CRYPTIC_VERSION = "2.1.0";
 
 /*
     color function
@@ -300,7 +301,7 @@ Or you could contribute to our sheets: Thanks!
 
 function help() {
     console.log(`
-cr: Cryptic Resolver. 
+cr: Cryptic Resolver version ${CRYPTIC_VERSION} in NodeJS
 
 usage:
   cr -h                     => print this help
