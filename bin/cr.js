@@ -29,7 +29,7 @@ const CRYPTIC_DEFAULT_SHEETS = {
     'medicine': "https://github.com/cryptic-resolver/cryptic_medicine.git"
 }
 
-const CRYPTIC_VERSION = "2.1.0";
+const CRYPTIC_VERSION = "2.2.0";
 
 /*
     color function
@@ -50,9 +50,10 @@ let cyan = (str) => `\x1b[36m${str}\x1b[0m`;
 */
 
 function isDirEmpty(dirname) {
-    return fs.promises.readdir(dirname).then(files => {
-        return files.length === 0;
-    });
+    // return fs.promises.readdir(dirname).then(files => {
+    //     return files.length === 0;
+    // });
+    return fs.readdirSync(dirname).length === 0
 }
 
 function is_there_any_sheet() {
@@ -64,16 +65,20 @@ function is_there_any_sheet() {
 }
 
 function add_default_sheet_if_none_exist() {
-    if (is_there_any_sheet()) {
+    if (!is_there_any_sheet()) {
         console.log("cr: Adding default sheets...");
 
         Object.entries(CRYPTIC_DEFAULT_SHEETS).forEach((arr) => {
             let sheet = arr[1];
-            execSync(`git -C ${CRYPTIC_RESOLVER_HOME} clone ${sheet}`);
+            try{
+                execSync(`git -C ${CRYPTIC_RESOLVER_HOME} clone ${sheet}`);
+            } catch {
+                console.log(`cr: git clone failed`);
+            }
         }
         )
 
-        console.log("cr: Done");
+        console.log("cr: Add done");
     }
 }
 
@@ -83,7 +88,7 @@ function update_sheets(sheet_repo) {
     add_default_sheet_if_none_exist();
 
     if (sheet_repo == undefined) {
-        console.log("cr: updating all sheets...");
+        console.log("cr: Updating all sheets...");
         let readDirOpt = {};
         readDirOpt.withFileTypes = true;
         let files = fs.readdirSync(CRYPTIC_RESOLVER_HOME, readDirOpt); // Dirent
@@ -94,14 +99,14 @@ function update_sheets(sheet_repo) {
                 execSync(`git -C ${CRYPTIC_RESOLVER_HOME}/${sheet.name} pull`);
             }
         });
-        console.log("cr: update done");
+        console.log("cr: Update done");
 
     } else {
         try {
             execSync(`git -C ${CRYPTIC_RESOLVER_HOME} clone ${sheet_repo}`); // no callback, so use catch
-            console.log("cr: add new sheet done");
+            console.log("cr: Add new sheet done");
         } catch (err) {
-            console.log("cr: already added before");
+            console.log("cr: Already added before");
         }
     }
 }
