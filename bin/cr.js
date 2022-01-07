@@ -129,7 +129,7 @@ function pp_info(info) {
     console.log(`\n  ${disp}: ${info['desc']}`);
 
     if (full = info['full']) {
-        console.log("\n  ", full);
+        console.log("\n ", full); // already has a space
     }
 
     let see_also = info['see'];
