@@ -240,7 +240,7 @@ function lookup(sheet, file, word) {
         info.forEach(meaning => {
             pp_info(dict[word][meaning])
             // last meaning doesn't show this separate line
-            if (info.at(-1) != meaning) {
+            if (info.at(-1) != meaning) { // string at() function not availbale in node v14
                 console.log(blue(bold("OR")));
             }
         })

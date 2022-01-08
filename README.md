@@ -163,6 +163,10 @@ In one sheet, you should consider adding a subkey to differ each other like the 
 
 ## cr in NodeJS development
 
+This is built in NodeJS v16.13.1
+
+Notice: NodeJS v14.17.2 can't pass all tests because of the lack of some APIs.
+
 maybe you need `sudo` access
 
 - `npm login`
