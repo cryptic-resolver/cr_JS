@@ -2,8 +2,6 @@
 
 **Cryptic Resolver in NodeJS**
 
-
-[![word-count](https://img.shields.io/badge/Keywords%20Inlcuded-541-brightgreen)](#default-sheets)
 [![Npm Version](https://badge.fury.io/js/cryptic-resolver.svg)](https://npmjs.com/package/cryptic-resolver) 
 
 </div>
@@ -13,7 +11,6 @@ The effort is to study etymology and know of naming conventions.
 
 Not only can it be used in the computer filed, but also you can use this to manage your own knowledge base easily.
 
-- Currently we have **541** keywords explained in our default sheets.
 
 <br>
 
