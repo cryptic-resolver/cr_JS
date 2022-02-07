@@ -169,6 +169,8 @@ Notice: NodeJS v14.17.2 can't pass all tests because of the lack of some APIs.
 
 maybe you need `sudo` access
 
+- `npm install` to install dependencies
+
 - `npm login`
 - `npm publish`
 - `npm install cryptic-resolcer -g`

@@ -3,7 +3,7 @@
 //   File          : cr.js
 //   Authors       : ccmywish <ccmywish@qq.com>
 //   Created on    : <2021-12-27>
-//   Last modified : <2021-12-28>
+//   Last modified : <2022-2-7>
 // 
 //   This file is used to explain a CRyptic command
 //   or an acronym's real meaning in computer world or 
@@ -29,7 +29,7 @@ const CRYPTIC_DEFAULT_SHEETS = {
     'medicine': "https://github.com/cryptic-resolver/cryptic_medicine.git"
 }
 
-const CRYPTIC_VERSION = "2.4.0";
+const CRYPTIC_VERSION = "2.5.0";
 
 /*
     color function
@@ -136,9 +136,11 @@ function pp_info(info) {
     if (see_also) {
         process.stdout.write("\n" + purple("SEE ALSO "));
         see_also.forEach(x => {
-            console.log(underline(x), ' ')
+            process.stdout.write(underline(x))
+            process.stdout.write(" ")
         });
     }
+    console.log();
     console.log();
 }
 
@@ -307,12 +309,17 @@ function help() {
     console.log(`cr: Cryptic Resolver version ${CRYPTIC_VERSION} in NodeJS
 
 usage:
+  cr -v                     => print version
   cr -h                     => print this help
   cr -u (xx.com//repo.git)  => update default sheet or add sheet from a git repo
   cr emacs                  => Edit macros: a feature-rich editor`
     )
 }
 
+
+function print_version() {
+    console.log(`cr: Cryptic Resolver version ${CRYPTIC_VERSION} in NodeJS`)
+}
 
 
 function main() {
@@ -325,6 +332,9 @@ function main() {
             break;
         case '-h':
             help();
+            break;
+        case '-v':
+            print_version();
             break;
         case '-u':
             update_sheets(process.argv.shift());
